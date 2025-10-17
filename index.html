@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyrim Requiem • Калькулятор Алхимии</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 3px solid #c9a64b;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #c9a64b;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: #a0a0a0;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+
+        /* Toggle Switch */
+        .mode-toggle {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .toggle-container {
+            background: #0f3460;
+            border-radius: 50px;
+            padding: 5px;
+            display: flex;
+            gap: 5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .toggle-btn {
+            padding: 15px 50px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: transparent;
+            color: #a0a0a0;
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #c9a64b, #d4af37);
+            color: #1a1a2e;
+            box-shadow: 0 4px 15px rgba(201, 166, 75, 0.4);
+        }
+
+        /* Settings Panel */
+        .settings-panel {
+            background: #0f3460;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .setting-group {
+            margin-bottom: 25px;
+        }
+
+        .setting-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .setting-label {
+            display: block;
+            font-size: 1.1em;
+            color: #c9a64b;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        /* Level Slider */
+        .level-slider {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .level-option {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            background: #16213e;
+            border: 2px solid #2a3f5f;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .level-option:hover {
+            border-color: #c9a64b;
+            transform: translateY(-2px);
+        }
+
+        .level-option.active {
+            background: linear-gradient(135deg, #c9a64b, #d4af37);
+            color: #1a1a2e;
+            border-color: #c9a64b;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(201, 166, 75, 0.4);
+        }
+
+        .level-number {
+            display: block;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .level-name {
+            display: block;
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+
+        /* Checkbox */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #c9a64b;
+        }
+
+        .checkbox-container label {
+            cursor: pointer;
+            user-select: none;
+            font-size: 1em;
+        }
+
+        /* Tables */
+        .category-section {
+            background: #0f3460;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .category-title {
+            font-size: 1.5em;
+            color: #c9a64b;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2a3f5f;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        thead {
+            background: #16213e;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            color: #c9a64b;
+            font-weight: bold;
+            border-bottom: 2px solid #2a3f5f;
+        }
+
+        th:nth-child(2),
+        th:nth-child(3),
+        th:nth-child(4) {
+            text-align: center;
+        }
+
+        th:nth-child(2) {
+            width: 320px;
+        }
+
+        th:nth-child(3) {
+            width: 200px;
+        }
+
+        th:nth-child(4) {
+            width: 200px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #2a3f5f;
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(201, 166, 75, 0.1);
+        }
+
+        /* Group background highlighting - more visible colors */
+        tbody tr.group-2 {
+            background: rgba(255, 80, 80, 0.15);
+        }
+
+        tbody tr.group-2:hover {
+            background: rgba(255, 80, 80, 0.25);
+        }
+
+        tbody tr.group-3 {
+            background: rgba(80, 180, 255, 0.15);
+        }
+
+        tbody tr.group-3:hover {
+            background: rgba(80, 180, 255, 0.25);
+        }
+
+        tbody tr.group-5 {
+            background: rgba(180, 80, 255, 0.15);
+        }
+
+        tbody tr.group-5:hover {
+            background: rgba(180, 80, 255, 0.25);
+        }
+
+        td {
+            padding: 10px 12px;
+        }
+
+        td:nth-child(2),
+        td:nth-child(3),
+        td:nth-child(4) {
+            text-align: center;
+        }
+
+        .potion-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1em;
+        }
+
+        .potion-name-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .potion-description {
+            font-size: 0.85em;
+            color: #a0a0a0;
+            font-style: italic;
+            margin-top: 2px;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .qty-btn {
+            min-width: 38px;
+            height: 28px;
+            padding: 0 6px;
+            border: none;
+            border-radius: 5px;
+            background: #c9a64b;
+            color: #1a1a2e;
+            font-size: 0.9em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .qty-btn:hover {
+            background: #d4af37;
+            transform: scale(1.1);
+        }
+
+        .qty-btn:active {
+            transform: scale(0.95);
+        }
+
+        .qty-input {
+            width: 55px;
+            padding: 5px;
+            text-align: center;
+            border: 2px solid #2a3f5f;
+            border-radius: 5px;
+            background: #16213e;
+            color: #e0e0e0;
+            font-size: 1em;
+            -moz-appearance: textfield;
+        }
+
+        .qty-input::-webkit-outer-spin-button,
+        .qty-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .qty-input:focus {
+            outline: none;
+            border-color: #c9a64b;
+        }
+
+        .recipe-cost {
+            font-size: 0.9em;
+            color: #a0a0a0;
+        }
+
+        .total-cost {
+            font-weight: bold;
+            color: #c9a64b;
+        }
+
+        /* Summary Section */
+        .summary-section {
+            background: linear-gradient(135deg, #0f3460, #16213e);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            border: 2px solid #c9a64b;
+        }
+
+        .summary-title {
+            font-size: 2em;
+            color: #c9a64b;
+            margin-bottom: 25px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .summary-subsection {
+            margin-bottom: 25px;
+        }
+
+        .summary-subsection:last-child {
+            margin-bottom: 0;
+        }
+
+        .subsection-title {
+            font-size: 1.3em;
+            color: #d4af37;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .summary-item {
+            background: #1a1a2e;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border-left: 4px solid #c9a64b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .summary-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(201, 166, 75, 0.3);
+        }
+
+        .summary-item.completed {
+            background: rgba(46, 125, 50, 0.3);
+            border-left-color: #4caf50;
+            opacity: 0.7;
+        }
+
+        .summary-item.completed:hover {
+            opacity: 0.85;
+        }
+
+        .summary-item.completed .summary-item-name,
+        .summary-item.completed .summary-item-value {
+            text-decoration: line-through;
+            color: #a0a0a0;
+        }
+
+        .summary-item-name {
+            font-size: 1.1em;
+            color: #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .summary-item-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #c9a64b;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn {
+            display: block;
+            margin: 30px auto 0;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .reset-btn:hover {
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.5);
+        }
+
+        .reset-btn:active {
+            transform: translateY(0);
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #a0a0a0;
+            font-size: 1.1em;
+            padding: 30px;
+        }
+
+        /* Scroll Button */
+        .scroll-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c9a64b, #d4af37);
+            border: 3px solid #0f3460;
+            color: #1a1a2e;
+            font-size: 2.2em;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(201, 166, 75, 0.5);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            user-select: none;
+        }
+
+        .scroll-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 25px rgba(201, 166, 75, 0.7);
+            background: linear-gradient(135deg, #d4af37, #c9a64b);
+        }
+
+        .scroll-btn:active {
+            transform: translateY(-1px) scale(1);
+        }
+
+        #scrollIcon {
+            display: block;
+            line-height: 0.8;
+            transition: transform 0.3s ease;
+        }
+
+        .scroll-btn:not(.at-bottom):hover #scrollIcon {
+            transform: translateY(3px);
+        }
+
+        .scroll-btn.at-bottom:hover #scrollIcon {
+            transform: translateY(-3px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .toggle-btn {
+                padding: 12px 30px;
+                font-size: 1em;
+            }
+
+            .level-slider {
+                flex-direction: column;
+            }
+
+            .level-option {
+                width: 100%;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
+            .qty-btn {
+                min-width: 32px;
+                height: 24px;
+                font-size: 0.8em;
+                padding: 0 4px;
+            }
+
+            .qty-input {
+                width: 45px;
+            }
+
+            .quantity-controls {
+                gap: 2px;
+            }
+
+            .scroll-btn {
+                width: 45px;
+                height: 45px;
+                bottom: 20px;
+                right: 20px;
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚗️ SKYRIM REQUIEM ⚗️</h1>
+            <div class="subtitle">Калькулятор Алхимии</div>
+        </header>
+
+        <!-- Mode Toggle -->
+        <div class="mode-toggle">
+            <div class="toggle-container">
+                <button class="toggle-btn active" onclick="switchMode('potions')">🧪 ЗЕЛЬЯ</button>
+                <button class="toggle-btn" onclick="switchMode('poisons')">☠️ ЯДЫ</button>
+            </div>
+        </div>
+
+        <!-- Settings Panel -->
+        <div class="settings-panel">
+            <div class="setting-group">
+                <label class="setting-label">Ваш уровень алхимии:</label>
+                <div class="level-slider">
+                    <div class="level-option active" onclick="setLevel(5)">
+                        <span class="level-number">5</span>
+                        <span class="level-name">Знание алхимии</span>
+                    </div>
+                    <div class="level-option" onclick="setLevel(25)">
+                        <span class="level-number">25</span>
+                        <span class="level-name" id="level-25-name">Улучшенные эликсиры</span>
+                    </div>
+                    <div class="level-option" onclick="setLevel(50)">
+                        <span class="level-number">50</span>
+                        <span class="level-name" id="level-50-name">Провизор</span>
+                    </div>
+                    <div class="level-option" onclick="setLevel(75)">
+                        <span class="level-number">75</span>
+                        <span class="level-name" id="level-75-name">Экспериментатор</span>
+                    </div>
+                    <div class="level-option" onclick="setLevel(100)">
+                        <span class="level-number">100</span>
+                        <span class="level-name" id="level-100-name">Мастер зелий</span>
+                    </div>
+                </div>
+            </div>
+            <div class="setting-group">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="hideLowLevel" checked onchange="resetChecklistAndUpdate()">
+                    <label for="hideLowLevel">Скрывать низкоуровневые зелья</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div id="content-area"></div>
+
+        <!-- Summary -->
+        <div class="summary-section" id="summary-section">
+            <h2 class="summary-title">📊 ИТОГО</h2>
+            <div id="summary-content"></div>
+            <button class="reset-btn" onclick="resetAll()">🔄 Сбросить всё</button>
+        </div>
+    </div>
+
+    <!-- Scroll Button -->
+    <div class="scroll-btn" id="scrollBtn" onclick="scrollPage()">
+        <span id="scrollIcon">↓</span>
+    </div>
+
+    <script>
+        let currentMode = 'potions';
+        let currentLevel = 5;
+        const quantities = {};
+        const checklist = {}; // Tracks completed items in summary
+
+        // Data structure for potions
+        const potionsData = {
+            recovery: {
+                title: '🔴 Зелья Восстановления',
+                items: [
+                    { name: 'Зелье восстановления здоровья I', level: 5, recipe: { extract1: 2, extract2: 1 }, tier: 1, desc: '5 ед. регенерации здоровья в секунду (20 сек)' },
+                    { name: 'Зелье восстановления здоровья II', level: 50, recipe: { extract2: 2, extract3: 1 }, tier: 2, desc: '10 ед. регенерации здоровья в секунду (20 сек)' },
+                    { name: 'Зелье восстановления здоровья III', level: 100, recipe: { extract4: 2, extract5: 1 }, tier: 3, desc: '15 ед. регенерации здоровья в секунду (20 сек)' },
+                    { name: 'Зелье восстановления магии I', level: 5, recipe: { extract1: 2, extract2: 1 }, tier: 1, desc: '5 ед. регенерации магии в секунду (20 сек)' },
+                    { name: 'Зелье восстановления магии II', level: 50, recipe: { extract2: 2, extract3: 1 }, tier: 2, desc: '10 ед. регенерации магии в секунду (20 сек)' },
+                    { name: 'Зелье восстановления магии III', level: 100, recipe: { extract4: 2, extract5: 1 }, tier: 3, desc: '15 ед. регенерации магии в секунду (20 сек)' },
+                    { name: 'Зелье восстановления запаса сил I', level: 5, recipe: { extract1: 2, extract2: 1 }, tier: 1, desc: '5 ед. регенерации запаса сил в секунду (20 сек)' },
+                    { name: 'Зелье восстановления запаса сил II', level: 50, recipe: { extract2: 2, extract3: 1 }, tier: 2, desc: '10 ед. регенерации запаса сил в секунду (20 сек)' },
+                    { name: 'Зелье восстановления запаса сил III', level: 100, recipe: { extract4: 2, extract5: 1 }, tier: 3, desc: '15 ед. регенерации запаса сил в секунду (20 сек)' },
+                    { name: 'Зелье омоложения I', level: 5, recipe: { intermediate: ['hp1', 'mp1', 'st1'] }, tier: 1, desc: '5 ед. регенерации здоровья, магии и запаса сил в секунду (20 сек)' },
+                    { name: 'Зелье омоложения II', level: 50, recipe: { intermediate: ['hp2', 'mp2', 'st2'] }, tier: 2, desc: '10 ед. регенерации здоровья, магии и запаса сил в секунду (20 сек)' },
+                    { name: 'Зелье омоложения III', level: 100, recipe: { intermediate: ['hp3', 'mp3', 'st3'] }, tier: 3, desc: '15 ед. регенерации здоровья, магии и запаса сил в секунду (20 сек)' }
+                ]
+            },
+            stats: {
+                title: '💪 Зелья Характеристик',
+                items: [
+                    { name: 'Зелье здоровья I', level: 5, recipe: { extract1: 2, extract2: 1 }, tier: 1, desc: '25 ед. здоровья и 125% регенерации здоровья (300 сек)' },
+                    { name: 'Зелье здоровья II', level: 50, recipe: { extract1: 2, extract2: 1 }, tier: 2, desc: '50 ед. здоровья и 250% регенерации здоровья (300 сек)' },
+                    { name: 'Зелье здоровья III', level: 100, recipe: { extract4: 2, extract5: 1 }, tier: 3, desc: '75 ед. здоровья и 500% регенерации здоровья (300 сек)' },
+                    { name: 'Зелье магии I', level: 5, recipe: { extract1: 2, extract2: 1 }, tier: 1, desc: '25 ед. магии и 25% регенерации магии (300 сек)' },
+                    { name: 'Зелье магии II', level: 50, recipe: { extract1: 2, extract2: 1 }, tier: 2, desc: '50 ед. магии и 50% регенерации магии (300 сек)' },
+                    { name: 'Зелье магии III', level: 100, recipe: { extract4: 2, extract5: 1 }, tier: 3, desc: '75 ед. магии и 100% регенерации магии (300 сек)' },
+                    { name: 'Зелье запаса сил I', level: 5, recipe: { extract1: 2, extract2: 1 }, tier: 1, desc: '25 ед. запаса сил и 25% регенерации запаса сил (300 сек)' },
+                    { name: 'Зелье запаса сил II', level: 50, recipe: { extract1: 2, extract2: 1 }, tier: 2, desc: '50 ед. запаса сил и 50% регенерации запаса сил (300 сек)' },
+                    { name: 'Зелье запаса сил III', level: 100, recipe: { extract4: 2, extract5: 1 }, tier: 3, desc: '75 ед. запаса сил и 100% регенерации запаса сил (300 сек)' },
+                    { name: 'Зелье гармонии I', level: 5, recipe: { intermediate: ['hp_stat1', 'mp_stat1', 'st_stat1'] }, tier: 1, desc: '25 ед. всех характеристик, 125% регенерации ХП и 25% регенерации СТ и МП (300 сек)' },
+                    { name: 'Зелье гармонии II', level: 50, recipe: { intermediate: ['hp_stat2', 'mp_stat2', 'st_stat2'] }, tier: 2, desc: '50 ед. всех характеристик, 250% регенерации ХП и 50% регенерации СТ и МП (300 сек)' },
+                    { name: 'Зелье гармонии III', level: 100, recipe: { intermediate: ['hp_stat3', 'mp_stat3', 'st_stat3'] }, tier: 3, desc: '75 ед. всех характеристик, 500% регенерации ХП и 100% регенерации СТ и МП (300 сек)' }
+                ]
+            },
+            resistance: {
+                title: '🛡️ Зелья Защиты',
+                items: [
+                    { name: 'Зелье защиты от магии I', level: 5, recipe: { extract1: 2, extract2: 1 }, tier: 1, desc: '5% сопротивления магии (300 сек)' },
+                    { name: 'Зелье защиты от магии II', level: 50, recipe: { extract2: 2, extract3: 1 }, tier: 2, desc: '10% сопротивления магии (300 сек)' },
+                    { name: 'Зелье защиты от магии III', level: 100, recipe: { extract4: 2, extract5: 1 }, tier: 3, desc: '15% сопротивления магии (300 сек)' },
+                    { name: 'Зелье защиты от огня I', level: 5, recipe: { extract1: 2, extract2: 1 }, tier: 1, desc: '15% сопротивления огню (300 сек)' },
+                    { name: 'Зелье защиты от огня II', level: 50, recipe: { extract2: 2, extract3: 1 }, tier: 2, desc: '20% сопротивления огню (300 сек)' },
+                    { name: 'Зелье защиты от огня III', level: 100, recipe: { extract4: 2, extract5: 1 }, tier: 3, desc: '25% сопротивления огню (300 сек)' },
+                    { name: 'Зелье защиты от холода I', level: 5, recipe: { extract1: 2, extract2: 1 }, tier: 1, desc: '15% сопротивления холоду (300 сек)' },
+                    { name: 'Зелье защиты от холода II', level: 50, recipe: { extract2: 2, extract3: 1 }, tier: 2, desc: '20% сопротивления холоду (300 сек)' },
+                    { name: 'Зелье защиты от холода III', level: 100, recipe: { extract4: 2, extract5: 1 }, tier: 3, desc: '25% сопротивления холоду (300 сек)' },
+                    { name: 'Зелье защиты от электричества I', level: 5, recipe: { extract1: 2, extract2: 1 }, tier: 1, desc: '15% сопротивления электричеству (300 сек)' },
+                    { name: 'Зелье защиты от электричества II', level: 50, recipe: { extract2: 2, extract3: 1 }, tier: 2, desc: '20% сопротивления электричеству (300 сек)' },
+                    { name: 'Зелье защиты от электричества III', level: 100, recipe: { extract4: 2, extract5: 1 }, tier: 3, desc: '25% сопротивления электричеству (300 сек)' },
+                    { name: 'Зелье защиты от стихий I', level: 5, recipe: { intermediate: ['magic_res1', 'fire_res1', 'frost_res1', 'shock_res1'] }, tier: 1, desc: '5% сопротивления магии и 15% сопротивления стихиям (300 сек)' },
+                    { name: 'Зелье защиты от стихий II', level: 50, recipe: { intermediate: ['magic_res2', 'fire_res2', 'frost_res2', 'shock_res2'] }, tier: 2, desc: '10% сопротивления магии и 20% сопротивления стихиям (300 сек)' },
+                    { name: 'Зелье защиты от стихий III', level: 100, recipe: { intermediate: ['magic_res3', 'fire_res3', 'frost_res3', 'shock_res3'] }, tier: 3, desc: '15% сопротивления магии и 25% сопротивления стихиям (300 сек)' }
+                ]
+            },
+            elixirs: {
+                title: '✨ Эликсиры',
+                items: [
+                    // Группа 2 - Защитные эликсиры (взаимоисключающие)
+                    { name: 'Эликсир иммунитета', level: 25, recipe: { extract1: 1, extract2: 2 }, tier: 2, desc: '25% сопротивления ядам и болезням (300 сек)', group: 2 },
+                    { name: 'Эликсир свёртывания крови', level: 25, recipe: { extract1: 1, extract2: 2 }, tier: 2, desc: '50% сопротивления кровотечению (300 сек)', group: 2 },
+                    // Группа 3 - Боевые усиления (взаимоисключающие)
+                    { name: 'Эликсир кабана', level: 25, recipe: { extract1: 1, extract2: 2 }, tier: 2, desc: '10% скорости передвижения (300 сек)', group: 3 },
+                    { name: 'Эликсир великана', level: 25, recipe: { extract1: 1, extract2: 2 }, tier: 2, desc: '25% устойчивости (300 сек)', group: 3 },
+                    { name: 'Эликсир рыцаря', level: 25, recipe: { extract1: 1, extract2: 2 }, tier: 2, desc: '100 ед. брони (300 сек)', group: 3 },
+                    // Группа 5 - Боевые эликсиры высокого уровня (взаимоисключающие)
+                    { name: 'Эликсир адреналина', level: 75, recipe: { extract3: 2, extract4: 1 }, tier: 4, desc: '10% скорости атаки (300 сек)', group: 5 },
+                    { name: 'Эликсир воителя', level: 75, recipe: { extract3: 2, extract4: 1 }, tier: 4, desc: '20% базового физического урона (300 сек)', group: 5 },
+                    { name: 'Эликсир мастера', level: 75, recipe: { extract3: 2, extract4: 1 }, tier: 4, desc: '100 ед. пробития брони (300 сек)', group: 5 },
+                    // Независимые эликсиры - можно комбинировать с любыми
+                    { name: 'Зелье пёрышка', level: 25, recipe: { extract1: 1, extract2: 2 }, tier: 2, desc: '250 ед. переносимого веса (300 сек)' },
+                    { name: 'Зелье тени', level: 25, recipe: { extract1: 1, extract2: 2 }, tier: 2, desc: 'Невидимость (30 сек)' },
+                    { name: 'Зелье панацеи', level: 25, recipe: { extract1: 1, extract2: 2 }, tier: 2, desc: 'Исцеляет от всех болезней' },
+                    { name: 'Зелье коагуляции', level: 75, recipe: { extract3: 2, extract4: 1 }, tier: 4, desc: 'Мгновенно снимает все эффекты кровотечения' },
+                    { name: 'Зелье заклинателя', level: 75, recipe: { extract3: 2, extract4: 1 }, tier: 4, desc: '10% снижение стоимости и 20% увеличение скорости произношения всех заклинаний (300 сек)' },
+                    { name: 'Зелье атронаха', level: 75, recipe: { extract3: 2, extract4: 1 }, tier: 4, desc: '15% шанс поглотить вражеское заклинание (300 сек)' },
+                    { name: 'Превосходное зелье омоложения', level: 100, recipe: { special: 'Сердце мамонта + Странные останки + Сердце даэдра' }, tier: 5, desc: '25 ед. регенерации здоровья, магии и запаса сил в секунду (20 сек)' }
+                ]
+            }
+        };
+
+        // Data structure for poisons
+        const poisonsData = {
+            direct: {
+                title: '☠️ Яды Прямого Урона',
+                items: [
+                    { name: 'Яд прямого урона здоровью I', level: 5, recipe: { poison1: 2, poison2: 1 }, tier: 1, desc: '25 ед. урона здоровью ядом' },
+                    { name: 'Яд прямого урона здоровью II', level: 25, recipe: { poison1: 1, poison2: 2 }, tier: 2, desc: '50 ед. урона здоровью ядом' },
+                    { name: 'Яд прямого урона здоровью III', level: 50, recipe: { poison2: 2, poison3: 1 }, tier: 3, desc: '75 ед. урона здоровью ядом' },
+                    { name: 'Яд прямого урона здоровью IV', level: 75, recipe: { poison3: 2, poison4: 1 }, tier: 4, desc: '100 ед. урона здоровью ядом' },
+                    { name: 'Яд прямого урона здоровью V', level: 100, recipe: { poison4: 2, poison5: 1 }, tier: 5, desc: '125 ед. урона здоровью ядом' }
+                ]
+            },
+            dot: {
+                title: '🩸 Яды Периодического Урона',
+                items: [
+                    { name: 'Яд периодического урона здоровью I', level: 5, recipe: { poison1: 2, poison2: 1 }, tier: 1, desc: '10 ед. урона здоровью ядом в секунду (5 сек)' },
+                    { name: 'Яд периодического урона здоровью II', level: 25, recipe: { poison1: 1, poison2: 2 }, tier: 2, desc: '20 ед. урона здоровью ядом в секунду (5 сек)' },
+                    { name: 'Яд периодического урона здоровью III', level: 50, recipe: { poison2: 2, poison3: 1 }, tier: 3, desc: '30 ед. урона здоровью ядом в секунду (5 сек)' },
+                    { name: 'Яд периодического урона здоровью IV', level: 75, recipe: { poison3: 2, poison4: 1 }, tier: 4, desc: '40 ед. урона здоровью ядом в секунду (5 сек)' },
+                    { name: 'Яд периодического урона здоровью V', level: 100, recipe: { poison4: 2, poison5: 1 }, tier: 5, desc: '50 ед. урона здоровью ядом в секунду (5 сек)' }
+                ]
+            },
+            combined: {
+                title: '💀 Комбинированные Яды',
+                items: [
+                    { name: 'Комбинированный яд I', level: 5, recipe: { intermediate: ['direct_poison1', 'dot_poison1'] }, tier: 1, desc: '25 ед. урона здоровью ядом + 10 ед. урона здоровью ядом в секунду (5 сек)' },
+                    { name: 'Комбинированный яд II', level: 25, recipe: { intermediate: ['direct_poison2', 'dot_poison2'] }, tier: 2, desc: '50 ед. урона здоровью ядом + 20 ед. урона здоровью ядом в секунду (5 сек)' },
+                    { name: 'Комбинированный яд III', level: 50, recipe: { intermediate: ['direct_poison3', 'dot_poison3'] }, tier: 3, desc: '75 ед. урона здоровью ядом + 30 ед. урона здоровью ядом в секунду (5 сек)' },
+                    { name: 'Комбинированный яд IV', level: 75, recipe: { intermediate: ['direct_poison4', 'dot_poison4'] }, tier: 4, desc: '100 ед. урона здоровью ядом + 40 ед. урона здоровью ядом в секунду (5 сек)' },
+                    { name: 'Комбинированный яд V', level: 100, recipe: { intermediate: ['direct_poison5', 'dot_poison5'] }, tier: 5, desc: '125 ед. урона здоровью ядом + 50 ед. урона здоровью ядом в секунду (5 сек)' },
+                    { name: 'Превосходный комбинированный яд', level: 100, recipe: { special: 'Экстракт яда V + Алый корень Нирна + Сердце Даэдра' }, tier: 5, desc: '250 ед. урона здоровью ядом + 100 ед. урона здоровью ядом в секунду (5 сек)' },
+                    { name: 'Парализующий яд', level: 100, recipe: { poison4: 2, poison5: 1 }, tier: 5, desc: 'Парализует цель (5 сек)' }
+                ]
+            }
+        };
+
+        function switchMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Reset checklist when switching modes
+            for (const key in checklist) {
+                delete checklist[key];
+            }
+            
+            // Update level names
+            if (mode === 'potions') {
+                document.getElementById('level-25-name').textContent = 'Улучшенные эликсиры';
+                document.getElementById('level-50-name').textContent = 'Провизор';
+                document.getElementById('level-75-name').textContent = 'Экспериментатор';
+                document.getElementById('level-100-name').textContent = 'Мастер зелий';
+            } else {
+                document.getElementById('level-25-name').textContent = 'Усиленные яды';
+                document.getElementById('level-50-name').textContent = 'Отравитель';
+                document.getElementById('level-75-name').textContent = 'Летальный экстракт';
+                document.getElementById('level-100-name').textContent = 'Мастер ядов';
+            }
+            
+            updateDisplay();
+        }
+
+        function setLevel(level) {
+            currentLevel = level;
+            document.querySelectorAll('.level-option').forEach(opt => opt.classList.remove('active'));
+            event.target.closest('.level-option').classList.add('active');
+            
+            // Reset checklist when changing level
+            for (const key in checklist) {
+                delete checklist[key];
+            }
+            
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const data = currentMode === 'potions' ? potionsData : poisonsData;
+            const hideLowLevel = document.getElementById('hideLowLevel').checked;
+            const contentArea = document.getElementById('content-area');
+            
+            let html = '';
+            
+            for (const [key, category] of Object.entries(data)) {
+                const items = category.items.filter(item => item.level <= currentLevel);
+                
+                if (hideLowLevel) {
+                    // Group by base name and keep only highest tier
+                    const grouped = {};
+                    items.forEach(item => {
+                        const baseName = item.name.replace(/ [IVX]+$/, '');
+                        if (!grouped[baseName] || grouped[baseName].tier < item.tier) {
+                            grouped[baseName] = item;
+                        }
+                    });
+                    const filteredItems = Object.values(grouped);
+                    
+                    if (filteredItems.length === 0) continue;
+                    
+                    html += createCategoryTable(category.title, filteredItems, key);
+                } else {
+                    if (items.length === 0) continue;
+                    html += createCategoryTable(category.title, items, key);
+                }
+            }
+            
+            contentArea.innerHTML = html;
+            updateSummary();
+        }
+
+        function createCategoryTable(title, items, categoryKey) {
+            let html = `
+                <div class="category-section">
+                    <div class="category-title">${title}</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Название</th>
+                                <th>Количество</th>
+                                <th>Рецепт</th>
+                                <th>Сумма</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            items.forEach((item, index) => {
+                const id = item.name.replace(/\s+/g, '_');
+                const qty = quantities[id] || 0;
+                const recipeText = getRecipeText(item.recipe);
+                const totalText = getTotalText(item.recipe, qty);
+                
+                // Add group class for background highlighting
+                const groupClass = item.group !== undefined ? `group-${item.group}` : '';
+                
+                html += `
+                    <tr class="${groupClass}">
+                        <td>
+                            <div class="potion-name">
+                                ${getItemIcon(item.name)}
+                                <div class="potion-name-container">
+                                    <div>${item.name}</div>
+                                    ${item.desc ? `<div class="potion-description">${item.desc}</div>` : ''}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="quantity-controls">
+                                <button class="qty-btn" onclick="changeQuantity('${id}', -10)">-10</button>
+                                <button class="qty-btn" onclick="changeQuantity('${id}', -5)">-5</button>
+                                <button class="qty-btn" onclick="changeQuantity('${id}', -1)">-1</button>
+                                <input type="number" class="qty-input" value="${qty}" 
+                                       onchange="setQuantity('${id}', this.value)" min="0">
+                                <button class="qty-btn" onclick="changeQuantity('${id}', 1)">+1</button>
+                                <button class="qty-btn" onclick="changeQuantity('${id}', 5)">+5</button>
+                                <button class="qty-btn" onclick="changeQuantity('${id}', 10)">+10</button>
+                            </div>
+                        </td>
+                        <td class="recipe-cost">${recipeText}</td>
+                        <td class="total-cost">${totalText}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            return html;
+        }
+
+        function getItemIcon(name) {
+            if (name.includes('здоровья') || name.includes('здоровью')) return '🔴';
+            if (name.includes('магии')) return '🔵';
+            if (name.includes('запаса сил')) return '🟢';
+            if (name.includes('омоложения') || name.includes('гармонии')) return '🟣';
+            if (name.includes('защиты от магии')) return '🔮';
+            if (name.includes('огня')) return '🔥';
+            if (name.includes('холода')) return '❄️';
+            if (name.includes('электричества')) return '⚡';
+            if (name.includes('стихий')) return '🌟';
+            if (name.includes('Комбинированный')) return '💀';
+            if (name.includes('Парализующий')) return '⚠️';
+            if (name.includes('Превосходн')) return '✨';
+            return '⚗️';
+        }
+
+        function getRecipeText(recipe) {
+            if (recipe.special) return recipe.special;
+            if (recipe.intermediate) return 'Промежуточные зелья';
+            
+            const parts = [];
+            const prefix = currentMode === 'potions' ? 'Экстракт' : 'Экстракт яда';
+            
+            if (recipe.extract1 || recipe.poison1) parts.push(`${prefix} I × ${recipe.extract1 || recipe.poison1}`);
+            if (recipe.extract2 || recipe.poison2) parts.push(`${prefix} II × ${recipe.extract2 || recipe.poison2}`);
+            if (recipe.extract3 || recipe.poison3) parts.push(`${prefix} III × ${recipe.extract3 || recipe.poison3}`);
+            if (recipe.extract4 || recipe.poison4) parts.push(`${prefix} IV × ${recipe.extract4 || recipe.poison4}`);
+            if (recipe.extract5 || recipe.poison5) parts.push(`${prefix} V × ${recipe.extract5 || recipe.poison5}`);
+            
+            return parts.join(', ');
+        }
+
+        function getTotalText(recipe, qty) {
+            if (qty === 0) return '—';
+            
+            // Handle special recipes
+            if (recipe.special) {
+                const ingredients = recipe.special.split(' + ').map(s => s.trim());
+                const parts = ingredients.map(ing => `${ing}: ${qty}`);
+                return parts.join(', ');
+            }
+            
+            const prefix = currentMode === 'potions' ? 'Экстракт' : 'Экстракт яда';
+            
+            if (recipe.intermediate) {
+                // Calculate extracts from intermediates
+                const extractTotals = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+                
+                for (const inter of recipe.intermediate) {
+                    const interRecipe = getIntermediateRecipe(inter);
+                    if (interRecipe) {
+                        for (let i = 1; i <= 5; i++) {
+                            if (interRecipe[i]) {
+                                extractTotals[i] += interRecipe[i] * qty;
+                            }
+                        }
+                    }
+                }
+                
+                const parts = [];
+                for (let i = 1; i <= 5; i++) {
+                    if (extractTotals[i] > 0) {
+                        parts.push(`${prefix} ${['I', 'II', 'III', 'IV', 'V'][i-1]}: ${extractTotals[i]}`);
+                    }
+                }
+                
+                return parts.length > 0 ? parts.join(', ') : '—';
+            }
+            
+            const parts = [];
+            
+            if (recipe.extract1 || recipe.poison1) parts.push(`${prefix} I: ${(recipe.extract1 || recipe.poison1) * qty}`);
+            if (recipe.extract2 || recipe.poison2) parts.push(`${prefix} II: ${(recipe.extract2 || recipe.poison2) * qty}`);
+            if (recipe.extract3 || recipe.poison3) parts.push(`${prefix} III: ${(recipe.extract3 || recipe.poison3) * qty}`);
+            if (recipe.extract4 || recipe.poison4) parts.push(`${prefix} IV: ${(recipe.extract4 || recipe.poison4) * qty}`);
+            if (recipe.extract5 || recipe.poison5) parts.push(`${prefix} V: ${(recipe.extract5 || recipe.poison5) * qty}`);
+            
+            return parts.join(', ');
+        }
+
+        function changeQuantity(id, delta) {
+            const current = quantities[id] || 0;
+            const newValue = Math.max(0, current + delta);
+            quantities[id] = newValue;
+            
+            // Reset checklist when quantities change
+            for (const key in checklist) {
+                delete checklist[key];
+            }
+            
+            updateDisplay();
+        }
+
+        function setQuantity(id, value) {
+            quantities[id] = Math.max(0, parseInt(value) || 0);
+            
+            // Reset checklist when quantities change
+            for (const key in checklist) {
+                delete checklist[key];
+            }
+            
+            updateDisplay();
+        }
+
+        function toggleChecklistItem(itemId) {
+            if (checklist[itemId]) {
+                delete checklist[itemId];
+            } else {
+                checklist[itemId] = true;
+            }
+            updateSummary();
+        }
+
+        function resetChecklistAndUpdate() {
+            for (const key in checklist) {
+                delete checklist[key];
+            }
+            updateDisplay();
+        }
+
+        function calculateTotals() {
+            const totals = {
+                extracts: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+                intermediates: {},
+                special: {} // Add special ingredients tracking
+            };
+            
+            const data = currentMode === 'potions' ? potionsData : poisonsData;
+            
+            for (const category of Object.values(data)) {
+                for (const item of category.items) {
+                    const id = item.name.replace(/\s+/g, '_');
+                    const qty = quantities[id] || 0;
+                    if (qty === 0) continue;
+                    
+                    if (item.recipe.special) {
+                        // Parse special ingredients
+                        const ingredients = item.recipe.special.split(' + ').map(s => s.trim());
+                        for (const ing of ingredients) {
+                            if (!totals.special[ing]) {
+                                totals.special[ing] = 0;
+                            }
+                            totals.special[ing] += qty;
+                        }
+                    } else if (item.recipe.intermediate) {
+                        // Complex recipe with intermediates
+                        for (const inter of item.recipe.intermediate) {
+                            if (!totals.intermediates[inter]) {
+                                totals.intermediates[inter] = { name: getIntermediateName(inter), qty: 0, recipe: getIntermediateRecipe(inter) };
+                            }
+                            totals.intermediates[inter].qty += qty;
+                        }
+                    } else {
+                        // Direct extract recipe
+                        const recipeKey = currentMode === 'potions' ? 'extract' : 'poison';
+                        for (let i = 1; i <= 5; i++) {
+                            const key = recipeKey + i;
+                            if (item.recipe[key]) {
+                                totals.extracts[i] += item.recipe[key] * qty;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Calculate extracts from intermediates
+            for (const inter of Object.values(totals.intermediates)) {
+                if (inter.recipe) {
+                    for (let i = 1; i <= 5; i++) {
+                        if (inter.recipe[i]) {
+                            totals.extracts[i] += inter.recipe[i] * inter.qty;
+                        }
+                    }
+                }
+            }
+            
+            return totals;
+        }
+
+        function getIntermediateName(code) {
+            const names = {
+                // Recovery potions
+                'hp1': 'Зелье восстановления здоровья I',
+                'hp2': 'Зелье восстановления здоровья II',
+                'hp3': 'Зелье восстановления здоровья III',
+                'mp1': 'Зелье восстановления магии I',
+                'mp2': 'Зелье восстановления магии II',
+                'mp3': 'Зелье восстановления магии III',
+                'st1': 'Зелье восстановления запаса сил I',
+                'st2': 'Зелье восстановления запаса сил II',
+                'st3': 'Зелье восстановления запаса сил III',
+                // Stat potions
+                'hp_stat1': 'Зелье здоровья I',
+                'hp_stat2': 'Зелье здоровья II',
+                'hp_stat3': 'Зелье здоровья III',
+                'mp_stat1': 'Зелье магии I',
+                'mp_stat2': 'Зелье магии II',
+                'mp_stat3': 'Зелье магии III',
+                'st_stat1': 'Зелье запаса сил I',
+                'st_stat2': 'Зелье запаса сил II',
+                'st_stat3': 'Зелье запаса сил III',
+                // Resistance potions
+                'magic_res1': 'Зелье защиты от магии I',
+                'magic_res2': 'Зелье защиты от магии II',
+                'magic_res3': 'Зелье защиты от магии III',
+                'fire_res1': 'Зелье защиты от огня I',
+                'fire_res2': 'Зелье защиты от огня II',
+                'fire_res3': 'Зелье защиты от огня III',
+                'frost_res1': 'Зелье защиты от холода I',
+                'frost_res2': 'Зелье защиты от холода II',
+                'frost_res3': 'Зелье защиты от холода III',
+                'shock_res1': 'Зелье защиты от электричества I',
+                'shock_res2': 'Зелье защиты от электричества II',
+                'shock_res3': 'Зелье защиты от электричества III',
+                // Poisons
+                'direct_poison1': 'Яд прямого урона здоровью I',
+                'direct_poison2': 'Яд прямого урона здоровью II',
+                'direct_poison3': 'Яд прямого урона здоровью III',
+                'direct_poison4': 'Яд прямого урона здоровью IV',
+                'direct_poison5': 'Яд прямого урона здоровью V',
+                'dot_poison1': 'Яд периодического урона здоровью I',
+                'dot_poison2': 'Яд периодического урона здоровью II',
+                'dot_poison3': 'Яд периодического урона здоровью III',
+                'dot_poison4': 'Яд периодического урона здоровью IV',
+                'dot_poison5': 'Яд периодического урона здоровью V'
+            };
+            return names[code] || code;
+        }
+
+        function getIntermediateRecipe(code) {
+            const recipes = {
+                'hp1': { 1: 2, 2: 1 }, 'hp2': { 2: 2, 3: 1 }, 'hp3': { 4: 2, 5: 1 },
+                'mp1': { 1: 2, 2: 1 }, 'mp2': { 2: 2, 3: 1 }, 'mp3': { 4: 2, 5: 1 },
+                'st1': { 1: 2, 2: 1 }, 'st2': { 2: 2, 3: 1 }, 'st3': { 4: 2, 5: 1 },
+                'hp_stat1': { 1: 2, 2: 1 }, 'hp_stat2': { 1: 2, 2: 1 }, 'hp_stat3': { 4: 2, 5: 1 },
+                'mp_stat1': { 1: 2, 2: 1 }, 'mp_stat2': { 1: 2, 2: 1 }, 'mp_stat3': { 4: 2, 5: 1 },
+                'st_stat1': { 1: 2, 2: 1 }, 'st_stat2': { 1: 2, 2: 1 }, 'st_stat3': { 4: 2, 5: 1 },
+                'magic_res1': { 1: 2, 2: 1 }, 'magic_res2': { 2: 2, 3: 1 }, 'magic_res3': { 4: 2, 5: 1 },
+                'fire_res1': { 1: 2, 2: 1 }, 'fire_res2': { 2: 2, 3: 1 }, 'fire_res3': { 4: 2, 5: 1 },
+                'frost_res1': { 1: 2, 2: 1 }, 'frost_res2': { 2: 2, 3: 1 }, 'frost_res3': { 4: 2, 5: 1 },
+                'shock_res1': { 1: 2, 2: 1 }, 'shock_res2': { 2: 2, 3: 1 }, 'shock_res3': { 4: 2, 5: 1 },
+                'direct_poison1': { 1: 2, 2: 1 }, 'direct_poison2': { 1: 1, 2: 2 }, 
+                'direct_poison3': { 2: 2, 3: 1 }, 'direct_poison4': { 3: 2, 4: 1 }, 
+                'direct_poison5': { 4: 2, 5: 1 },
+                'dot_poison1': { 1: 2, 2: 1 }, 'dot_poison2': { 1: 1, 2: 2 }, 
+                'dot_poison3': { 2: 2, 3: 1 }, 'dot_poison4': { 3: 2, 4: 1 }, 
+                'dot_poison5': { 4: 2, 5: 1 }
+            };
+            return recipes[code] || null;
+        }
+
+        function updateSummary() {
+            const totals = calculateTotals();
+            const summaryContent = document.getElementById('summary-content');
+            
+            const hasIntermediates = Object.keys(totals.intermediates).length > 0;
+            const hasExtracts = Object.values(totals.extracts).some(v => v > 0);
+            const hasSpecial = Object.keys(totals.special).length > 0;
+            
+            if (!hasIntermediates && !hasExtracts && !hasSpecial) {
+                summaryContent.innerHTML = '<div class="empty-message">Выберите зелья для расчета материалов</div>';
+                return;
+            }
+            
+            let html = '';
+            
+            // Special ingredients section (show first as they are unique items)
+            if (hasSpecial) {
+                html += `
+                    <div class="summary-subsection">
+                        <div class="subsection-title">✨ Специальные ингредиенты:</div>
+                        <div class="summary-grid">
+                `;
+                
+                for (const [name, qty] of Object.entries(totals.special)) {
+                    const itemId = `special_${name.replace(/\s+/g, '_')}`;
+                    const isCompleted = checklist[itemId] ? 'completed' : '';
+                    html += `
+                        <div class="summary-item ${isCompleted}" onclick="toggleChecklistItem('${itemId}')">
+                            <span class="summary-item-name">${name}</span>
+                            <span class="summary-item-value">${qty} шт</span>
+                        </div>
+                    `;
+                }
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Intermediates section
+            if (hasIntermediates) {
+                html += `
+                    <div class="summary-subsection">
+                        <div class="subsection-title">🧪 Промежуточные зелья:</div>
+                        <div class="summary-grid">
+                `;
+                
+                for (const inter of Object.values(totals.intermediates)) {
+                    const itemId = `intermediate_${inter.name.replace(/\s+/g, '_')}`;
+                    const isCompleted = checklist[itemId] ? 'completed' : '';
+                    html += `
+                        <div class="summary-item ${isCompleted}" onclick="toggleChecklistItem('${itemId}')">
+                            <span class="summary-item-name">${inter.name}</span>
+                            <span class="summary-item-value">${inter.qty} шт</span>
+                        </div>
+                    `;
+                }
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Extracts section
+            if (hasExtracts) {
+                const prefix = currentMode === 'potions' ? 'Экстракт зелья' : 'Экстракт яда';
+                html += `
+                    <div class="summary-subsection">
+                        <div class="subsection-title">⚗️ Экстракты:</div>
+                        <div class="summary-grid">
+                `;
+                
+                for (let i = 1; i <= 5; i++) {
+                    if (totals.extracts[i] > 0) {
+                        const extractName = `${prefix} ${['I', 'II', 'III', 'IV', 'V'][i-1]}`;
+                        const itemId = `extract_${currentMode}_${i}`;
+                        const isCompleted = checklist[itemId] ? 'completed' : '';
+                        html += `
+                            <div class="summary-item ${isCompleted}" onclick="toggleChecklistItem('${itemId}')">
+                                <span class="summary-item-name">${extractName}</span>
+                                <span class="summary-item-value">${totals.extracts[i]} шт</span>
+                            </div>
+                        `;
+                    }
+                }
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+            
+            summaryContent.innerHTML = html;
+        }
+
+        function resetAll() {
+            for (const key in quantities) {
+                delete quantities[key];
+            }
+            for (const key in checklist) {
+                delete checklist[key];
+            }
+            updateDisplay();
+        }
+
+        // Initialize
+        updateDisplay();
+
+        // Scroll button functionality
+        let isAtBottom = false;
+
+        function updateScrollButton() {
+            const scrollBtn = document.getElementById('scrollBtn');
+            const scrollIcon = document.getElementById('scrollIcon');
+            const scrollPosition = window.scrollY + window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            
+            // Check if near bottom (within 100px)
+            if (documentHeight - scrollPosition < 100) {
+                isAtBottom = true;
+                scrollIcon.textContent = '↑';
+                scrollBtn.classList.add('at-bottom');
+            } else {
+                isAtBottom = false;
+                scrollIcon.textContent = '↓';
+                scrollBtn.classList.remove('at-bottom');
+            }
+        }
+
+        function scrollPage() {
+            if (isAtBottom) {
+                // Scroll to top
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            } else {
+                // Scroll to bottom
+                window.scrollTo({
+                    top: document.documentElement.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Update button on scroll
+        window.addEventListener('scroll', updateScrollButton);
+        
+        // Initial check
+        updateScrollButton();
+    </script>
+</body>
+</html>
