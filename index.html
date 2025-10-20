@@ -471,6 +471,84 @@
             font-size: 1.2em;
         }
 
+        /* Level sections */
+        .level-section {
+            margin-top: 35px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(201, 166, 75, 0.3);
+        }
+
+        .level-title {
+            font-size: 1.5em !important;
+            color: #d4af37 !important;
+            font-weight: bold;
+        }
+
+        .level-potions-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .level-potion-item {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Intermediate potions */
+        .intermediate-list {
+            margin-left: 30px;
+            padding: 10px 15px;
+            background: rgba(201, 166, 75, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid rgba(201, 166, 75, 0.3);
+        }
+
+        .intermediate-title {
+            color: #a0a0a0;
+            font-size: 0.95em;
+            margin-bottom: 8px;
+        }
+
+        .intermediate-item {
+            padding: 8px 12px;
+            margin: 5px 0;
+            background: rgba(26, 26, 46, 0.5);
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .intermediate-item:hover {
+            background: rgba(26, 26, 46, 0.8);
+            transform: translateX(3px);
+        }
+
+        .intermediate-item.completed {
+            background: rgba(46, 125, 50, 0.2);
+            opacity: 0.6;
+        }
+
+        .intermediate-item.completed span {
+            text-decoration: line-through;
+            color: #808080;
+        }
+
+        .inter-qty {
+            color: #c9a64b;
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+
+        .intermediate-item.completed .inter-qty {
+            color: #808080;
+        }
+
         .reset-btn {
             display: block;
             margin: 30px auto 0;
@@ -674,13 +752,13 @@
         const quantities = {};
         const checklist = {}; // Tracks completed items in summary
 
-        // Extract prices (bag of 50)
+        // Extract prices per bag (10 pieces per bag)
         const extractPrices = {
-            1: 93,   // Bag of 50 Extract I = 93 gold
-            2: 186,  // Bag of 50 Extract II = 186 gold
-            3: 278,  // Bag of 50 Extract III = 278 gold
-            4: 464,  // Bag of 50 Extract IV = 464 gold
-            5: 928   // Bag of 50 Extract V = 928 gold
+            1: 93,    // Bag of 10 Extract I = 93 gold
+            2: 186,   // Bag of 10 Extract II = 186 gold
+            3: 278,   // Bag of 10 Extract III = 278 gold
+            4: 464,   // Bag of 10 Extract IV = 464 gold
+            5: 928    // Bag of 10 Extract V = 928 gold
         };
 
         // Data structure for potions
@@ -1124,8 +1202,8 @@
             let totalCost = 0;
             for (let i = 1; i <= 5; i++) {
                 if (extracts[i] > 0) {
-                    // Round up to nearest bag of 50
-                    const bagsNeeded = Math.ceil(extracts[i] / 50);
+                    // Round up to nearest bag of 10
+                    const bagsNeeded = Math.ceil(extracts[i] / 10);
                     totalCost += bagsNeeded * extractPrices[i];
                 }
             }
@@ -1148,8 +1226,8 @@
                     if (interRecipe) {
                         for (let i = 1; i <= 5; i++) {
                             if (interRecipe[i]) {
-                                // Price per extract = bag price / 50
-                                const pricePerExtract = extractPrices[i] / 50;
+                                // Price per extract = bag price / 10
+                                const pricePerExtract = extractPrices[i] / 10;
                                 cost += interRecipe[i] * pricePerExtract;
                             }
                         }
@@ -1161,8 +1239,8 @@
                 for (let i = 1; i <= 5; i++) {
                     const key = recipeKey + i;
                     if (recipe[key]) {
-                        // Price per extract = bag price / 50
-                        const pricePerExtract = extractPrices[i] / 50;
+                        // Price per extract = bag price / 10
+                        const pricePerExtract = extractPrices[i] / 10;
                         cost += recipe[key] * pricePerExtract;
                     }
                 }
@@ -1251,64 +1329,17 @@
             const hasExtracts = Object.values(totals.extracts).some(v => v > 0);
             const hasSpecial = Object.keys(totals.special).length > 0;
             
-            if (!hasIntermediates && !hasExtracts && !hasSpecial) {
+            // Check if any potions selected
+            const hasAnyPotions = Object.values(quantities).some(qty => qty > 0);
+            
+            if (!hasAnyPotions) {
                 summaryContent.innerHTML = '<div class="empty-message">Выберите зелья для расчета материалов</div>';
                 return;
             }
             
             let html = '';
             
-            // Special ingredients section (show first as they are unique items)
-            if (hasSpecial) {
-                html += `
-                    <div class="summary-subsection">
-                        <div class="subsection-title">✨ Специальные ингредиенты:</div>
-                        <div class="summary-grid">
-                `;
-                
-                for (const [name, qty] of Object.entries(totals.special)) {
-                    const itemId = `special_${name.replace(/\s+/g, '_')}`;
-                    const isCompleted = checklist[itemId] ? 'completed' : '';
-                    html += `
-                        <div class="summary-item ${isCompleted}" onclick="toggleChecklistItem('${itemId}')">
-                            <span class="summary-item-name">${name}</span>
-                            <span class="summary-item-value">${qty} шт</span>
-                        </div>
-                    `;
-                }
-                
-                html += `
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // Intermediates section
-            if (hasIntermediates) {
-                html += `
-                    <div class="summary-subsection">
-                        <div class="subsection-title">🧪 Промежуточные зелья:</div>
-                        <div class="summary-grid">
-                `;
-                
-                for (const inter of Object.values(totals.intermediates)) {
-                    const itemId = `intermediate_${inter.name.replace(/\s+/g, '_')}`;
-                    const isCompleted = checklist[itemId] ? 'completed' : '';
-                    html += `
-                        <div class="summary-item ${isCompleted}" onclick="toggleChecklistItem('${itemId}')">
-                            <span class="summary-item-name">${inter.name}</span>
-                            <span class="summary-item-value">${inter.qty} шт</span>
-                        </div>
-                    `;
-                }
-                
-                html += `
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // Extracts section
+            // SECTION 1: Extracts (always first)
             if (hasExtracts) {
                 const prefix = currentMode === 'potions' ? 'Экстракт зелья' : 'Экстракт яда';
                 html += `
@@ -1335,19 +1366,138 @@
                         </div>
                     </div>
                 `;
+                
+                // Calculate and display total cost
+                const totalCost = calculateExtractCost(totals.extracts);
+                if (totalCost > 0) {
+                    html += `
+                        <div class="summary-total-cost">
+                            💰 Общая стоимость экстрактов: <span class="cost-value">${totalCost} золота</span>
+                        </div>
+                    `;
+                }
             }
             
-            // Calculate and display total cost
-            const totalCost = calculateExtractCost(totals.extracts);
-            if (totalCost > 0) {
+            // SECTION 2: Special ingredients (if any)
+            if (hasSpecial) {
                 html += `
-                    <div class="summary-total-cost">
-                        💰 Общая стоимость экстрактов: <span class="cost-value">${totalCost} золота</span>
+                    <div class="summary-subsection">
+                        <div class="subsection-title">✨ Специальные ингредиенты:</div>
+                        <div class="summary-grid">
+                `;
+                
+                for (const [name, qty] of Object.entries(totals.special)) {
+                    const itemId = `special_${name.replace(/\s+/g, '_')}`;
+                    const isCompleted = checklist[itemId] ? 'completed' : '';
+                    html += `
+                        <div class="summary-item ${isCompleted}" onclick="toggleChecklistItem('${itemId}')">
+                            <span class="summary-item-name">${name}</span>
+                            <span class="summary-item-value">${qty} шт</span>
+                        </div>
+                    `;
+                }
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // SECTION 3: Potions by level (5 → 100)
+            const data = currentMode === 'potions' ? potionsData : poisonsData;
+            const potionsByLevel = groupPotionsByLevel(data);
+            
+            const levelNames = {
+                5: '🎯 5 Новичок',
+                25: '🎯 25 Ученик', 
+                50: '🎯 50 Адепт',
+                75: '🎯 75 Эксперт',
+                100: '🎯 100 Мастер'
+            };
+            
+            for (const level of [5, 25, 50, 75, 100]) {
+                const potions = potionsByLevel[level] || [];
+                if (potions.length === 0) continue;
+                
+                html += `
+                    <div class="summary-subsection level-section">
+                        <div class="subsection-title level-title">${levelNames[level]}</div>
+                        <div class="level-potions-grid">
+                `;
+                
+                for (const potion of potions) {
+                    const itemId = `potion_${potion.name.replace(/\s+/g, '_')}`;
+                    const isCompleted = checklist[itemId] ? 'completed' : '';
+                    
+                    html += `
+                        <div class="level-potion-item">
+                            <div class="summary-item ${isCompleted}" onclick="toggleChecklistItem('${itemId}')">
+                                <span class="summary-item-name">${potion.name}</span>
+                                <span class="summary-item-value">x${potion.qty}</span>
+                            </div>
+                    `;
+                    
+                    // Show intermediates if any
+                    if (potion.intermediates && potion.intermediates.length > 0) {
+                        html += `<div class="intermediate-list">`;
+                        html += `<div class="intermediate-title">└─ Промежуточные:</div>`;
+                        for (const inter of potion.intermediates) {
+                            const interId = `intermediate_${inter.name.replace(/\s+/g, '_')}`;
+                            const interCompleted = checklist[interId] ? 'completed' : '';
+                            html += `
+                                <div class="intermediate-item ${interCompleted}" onclick="event.stopPropagation(); toggleChecklistItem('${interId}')">
+                                    <span>• ${inter.name}</span>
+                                    <span class="inter-qty">(x${inter.qty})</span>
+                                </div>
+                            `;
+                        }
+                        html += `</div>`;
+                    }
+                    
+                    html += `</div>`;
+                }
+                
+                html += `
+                        </div>
                     </div>
                 `;
             }
             
             summaryContent.innerHTML = html;
+        }
+        
+        function groupPotionsByLevel(data) {
+            const grouped = { 5: [], 25: [], 50: [], 75: [], 100: [] };
+            
+            for (const category of Object.values(data)) {
+                for (const item of category.items) {
+                    const id = item.name.replace(/\s+/g, '_');
+                    const qty = quantities[id] || 0;
+                    if (qty === 0) continue;
+                    
+                    const level = item.level || 5;
+                    
+                    const potionData = {
+                        name: item.name,
+                        qty: qty,
+                        intermediates: []
+                    };
+                    
+                    // Get intermediates if any
+                    if (item.recipe.intermediate) {
+                        for (const inter of item.recipe.intermediate) {
+                            potionData.intermediates.push({
+                                name: getIntermediateName(inter),
+                                qty: qty
+                            });
+                        }
+                    }
+                    
+                    grouped[level].push(potionData);
+                }
+            }
+            
+            return grouped;
         }
 
         function resetAll() {
